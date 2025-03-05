@@ -8,5 +8,5 @@ This project simulates **wireless spectrum allocation** in a multi-user environm
 -  Visualizes **spectrum usage** using a **Power Spectral Density (PSD) plot**  
 -  Analyzes **interference effects** when signals overlap  
 -  Demonstrates **real-world wireless spectrum allocation issues**  
--  Useful for **5G, Wi-Fi, and Cognitive Radio research**  
+
 
