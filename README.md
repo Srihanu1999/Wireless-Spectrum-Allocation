@@ -1,12 +1,11 @@
 #  Wireless Spectrum Allocation and Interference Analysis
 
 ##  Overview
-This project simulates **wireless spectrum allocation** in a multi-user environment and analyzes **interference levels** among users. It generates a **Power Spectral Density (PSD) plot** to visualize how multiple wireless signals interact in a shared frequency spectrum. This is useful for **5G, Wi-Fi, and cognitive radio systems**, where spectrum management is crucial.
+This project simulates dynamic wireless spectrum allocation using MATLAB. It implements cognitive radio, adaptive power control, and OFDM-based transmission for efficient spectrum management. The simulation detects idle spectrum slots and assigns them dynamically to secondary users, ensuring efficient frequency utilization
 
 ##  Features
--  Simulates **multiple users** transmitting on different frequency bands  
--  Visualizes **spectrum usage** using a **Power Spectral Density (PSD) plot**  
--  Analyzes **interference effects** when signals overlap  
--  Demonstrates **real-world wireless spectrum allocation issues**  
+-  **Adaptive Power Control** – Adjusts user transmission power based on interference levels.  
+-  **Cognitive Radio Simulation** – Detects and utilizes free spectrum slots without interfering with primary users. 
+-  **Power Spectral Density (PSD)** Analysis – Visualizes spectrum usage in a graphical format. 
 
 
