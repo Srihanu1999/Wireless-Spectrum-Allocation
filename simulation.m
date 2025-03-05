@@ -1,31 +1,67 @@
+
+%% Wireless Spectrum Allocation with Dynamic Assignment, Power Control, and Cognitive Radio
 clc; clear; close all;
 
-fs = 1e6;        % Sampling frequency (1 MHz)
-t = 0:1/fs:1-1/fs; % Time vector (1 second)
-N = length(t);   % Number of samples
+%% Parameters
+fs = 1e6; % Sampling frequency (1 MHz)
+num_users = 5; % Number of primary users
+num_secondary_users = 2; % Number of cognitive radio users
+bw = 200e3; % Bandwidth per user (200 kHz)
+nfft = 1024; % FFT size for PSD calculation
 
-% Define carrier frequencies for different users
-f1 = 100e3; % User 1: 100 kHz
-f2 = 120e3; % User 2: 120 kHz (close frequency, potential interference)
-f3 = 300e3; % User 3: 300 kHz (far frequency, less interference)
+% Frequency allocation (dynamic)
+primary_frequencies = sort(rand(1, num_users) * (fs - bw));
+secondary_frequencies = zeros(1, num_secondary_users);
 
-% Generate signals for each user
-s1 = cos(2*pi*f1*t); % User 1 signal
-s2 = cos(2*pi*f2*t); % User 2 signal (may cause interference with User 1)
-s3 = cos(2*pi*f3*t); % User 3 signal (less interference)
+% Power control (initial power levels)
+power_levels = ones(1, num_users) * 1; % Default power = 1
 
-% Combine signals (simulating shared spectrum usage)
-signal = s1 + s2 + s3;
+%% Generate signals for primary users
+signals = zeros(num_users, nfft);
+time = (0:nfft-1) / fs;
 
-% Compute Power Spectral Density (PSD) using FFT
-f = linspace(-fs/2, fs/2, N); % Frequency axis
-PSD = abs(fftshift(fft(signal))).^2 / N; 
+for i = 1:num_users
+    f = primary_frequencies(i);
+    signals(i, :) = power_levels(i) * cos(2 * pi * f * time);
+end
 
-% Plot Power Spectral Density
+%% Cognitive Radio: Spectrum Sensing and Allocation
+sensed_spectrum = sum(signals, 1); % Combined spectrum of all primary users
+threshold = 0.1; % Threshold for detecting an occupied spectrum
+
+for i = 1:num_secondary_users
+    available_bands = find(sensed_spectrum < threshold); % Find free spectrum slots
+    if ~isempty(available_bands)
+        secondary_frequencies(i) = fs * rand(); % Assign a free frequency dynamically
+    end
+end
+
+%% Generate signals for cognitive radio users
+secondary_signals = zeros(num_secondary_users, nfft);
+for i = 1:num_secondary_users
+    f = secondary_frequencies(i);
+    if f > 0 % If an available band was found
+        secondary_signals(i, :) = 0.5 * cos(2 * pi * f * time); % Lower power than primary users
+    end
+end
+
+%% Combine and Plot Power Spectral Density (PSD)
+combined_signal = sum(signals, 1) + sum(secondary_signals, 1);
+psd_signal = abs(fft(combined_signal, nfft)).^2 / nfft;
+freq_axis = linspace(0, fs, nfft);
+
 figure;
-plot(f/1e3, 10*log10(PSD), 'b', 'LineWidth', 1.5);
-xlabel('Frequency (kHz)');
-ylabel('Power Spectral Density (dB)');
-title('Wireless Spectrum Usage and Interference Analysis');
+plot(freq_axis, 10*log10(psd_signal));
 grid on;
-xlim([-500 500]);
+xlabel('Frequency (Hz)');
+ylabel('Power Spectral Density (dB)');
+title('Power Spectral Density of Wireless Spectrum Allocation');
+
+%% Adaptive Power Control: Reduce Power in High Interference Zones
+for i = 1:num_users
+    if mean(psd_signal) > threshold
+        power_levels(i) = power_levels(i) * 0.8; % Reduce power if interference is high
+    end
+end
+
+
